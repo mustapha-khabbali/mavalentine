@@ -110,7 +110,7 @@
         function moveButton() {
             noCount++;
             
-            if (noCount >= 10) {
+            if (noCount >= 5) {
                 angryWarning.classList.remove('hidden');
                 angryWarning.classList.add('flex');
                 
@@ -160,6 +160,9 @@
         });
 
         yesBtn.addEventListener('click', (e) => {
+            // Check if warning is active; if so, do nothing
+            if (!angryWarning.classList.contains('hidden')) return;
+
             e.stopPropagation(); 
             playMusic(); 
             questionContainer.classList.add('hidden');
