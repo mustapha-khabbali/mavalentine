@@ -51,11 +51,17 @@
             wach msali(a) nhar 14?
         </h1>
 
-        <!-- Buttons: Side by side on all screens with responsive gap -->
+        <!-- Angry Warning (Hidden by default) -->
+        <div id="angry-warning" class="hidden flex-col items-center space-y-2 animate-bounce pointer-events-none">
+            <img src="ang.png" alt="Angry" class="w-24 h-24 object-contain" onerror="this.style.display='none'">
+            <p class="text-red-600 font-bold text-xl uppercase tracking-wider">wach men neytek</p>
+        </div>
+
+        <!-- Buttons -->
         <div class="flex flex-row items-center justify-center gap-6 sm:gap-12 w-full pt-4">
             <button id="yes-button" 
                 class="px-6 py-3 sm:px-10 sm:py-4 bg-pink-500 hover:bg-pink-600 text-white text-xl sm:text-2xl font-bold rounded-full shadow-lg transform transition hover:scale-105 active:scale-95 whitespace-nowrap">
-               AH! 💖
+                AH! 💖
             </button>
             
             <button id="no-button" 
@@ -81,21 +87,39 @@
         const yesBtn = document.getElementById('yes-button');
         const questionContainer = document.getElementById('question-container');
         const successContainer = document.getElementById('success-container');
+        const angryWarning = document.getElementById('angry-warning');
 
-        // Global Audio instance
         const bgMusic = new Audio('avec.mp3');
         bgMusic.loop = true;
 
-        // Function to attempt playing audio
         const playMusic = () => {
-            bgMusic.play().catch(error => {
-                console.log("Audio playback failed:", error);
-            });
+            bgMusic.play().catch(error => console.log("Audio playback failed:", error));
         };
 
         let isMoved = false;
+        let noCount = 0;
+        let warningTimeout = null;
+
+        function hideWarning() {
+            angryWarning.classList.add('hidden');
+            angryWarning.classList.remove('flex');
+            noCount = 0; // Reset count so the cycle repeats
+            if (warningTimeout) clearTimeout(warningTimeout);
+        }
 
         function moveButton() {
+            noCount++;
+            
+            // Trigger warning after 10 attempts
+            if (noCount >= 10) {
+                angryWarning.classList.remove('hidden');
+                angryWarning.classList.add('flex');
+                
+                // Auto-hide after 6 seconds (6000ms)
+                if (warningTimeout) clearTimeout(warningTimeout);
+                warningTimeout = setTimeout(hideWarning, 6000);
+            }
+
             if (!isMoved) {
                 const rect = noBtn.getBoundingClientRect();
                 noBtn.style.left = `${rect.left}px`;
@@ -123,16 +147,24 @@
             noBtn.style.top = `${randomY}px`;
         }
 
+        // Hide warning on any click anywhere
+        document.addEventListener('click', () => {
+            if (!angryWarning.classList.contains('hidden')) {
+                hideWarning();
+            }
+        });
+
         noBtn.addEventListener('mouseover', moveButton);
+
         noBtn.addEventListener('touchstart', (e) => {
             e.preventDefault();
+            e.stopPropagation();
             moveButton();
         });
 
-        yesBtn.addEventListener('click', () => {
-            // Music only starts here now
+        yesBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
             playMusic(); 
-            
             questionContainer.classList.add('hidden');
             successContainer.classList.remove('hidden');
             successContainer.classList.add('flex');
@@ -148,7 +180,6 @@
                 heart.style.left = Math.random() * 100 + 'vw';
                 heart.style.top = '100vh';
                 document.body.appendChild(heart);
-                
                 setTimeout(() => heart.remove(), 3000);
             }, 150);
         }
