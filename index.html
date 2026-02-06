@@ -41,7 +41,13 @@
 <body class="flex flex-col items-center justify-center min-h-screen p-4 sm:p-8">
 
     <!-- Initial Question View -->
-    <div id="question-container" class="flex flex-col items-center text-center w-full max-w-4xl space-y-8 sm:space-y-12">
+    <div id="question-container" class="relative flex flex-col items-center text-center w-full max-w-4xl space-y-8 sm:space-y-12">
+        
+        <!-- Angry Warning Overlay -->
+        <div id="angry-warning" class="hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[100] flex-col items-center space-y-4 pointer-events-none w-full max-w-lg">
+            <img src="tfo.png" alt="Angry" class="w-64 h-64 sm:w-96 sm:h-96 object-contain drop-shadow-2xl rounded-2xl" onerror="this.style.display='none'">
+        </div>
+
         <div class="relative inline-block">
             <span class="text-6xl sm:text-8xl">💝</span>
             <div class="absolute -top-2 -right-2 sm:-top-4 sm:-right-4 animate-bounce text-2xl sm:text-4xl">✨</div>
@@ -50,12 +56,6 @@
         <h1 class="text-4xl sm:text-6xl md:text-7xl font-bold text-pink-600 cursive px-2">
             wach msali(a) nhar 14?
         </h1>
-
-        <!-- Angry Warning (Hidden by default) -->
-        <div id="angry-warning" class="hidden flex-col items-center space-y-2 animate-bounce pointer-events-none">
-            <img src="ang.png" alt="Angry" class="w-24 h-24 object-contain" onerror="this.style.display='none'">
-            <p class="text-red-600 font-bold text-xl uppercase tracking-wider">wach men neytek</p>
-        </div>
 
         <!-- Buttons -->
         <div class="flex flex-row items-center justify-center gap-6 sm:gap-12 w-full pt-4">
@@ -103,19 +103,17 @@
         function hideWarning() {
             angryWarning.classList.add('hidden');
             angryWarning.classList.remove('flex');
-            noCount = 0; // Reset count so the cycle repeats
+            noCount = 0; 
             if (warningTimeout) clearTimeout(warningTimeout);
         }
 
         function moveButton() {
             noCount++;
             
-            // Trigger warning after 10 attempts
             if (noCount >= 10) {
                 angryWarning.classList.remove('hidden');
                 angryWarning.classList.add('flex');
                 
-                // Auto-hide after 6 seconds (6000ms)
                 if (warningTimeout) clearTimeout(warningTimeout);
                 warningTimeout = setTimeout(hideWarning, 6000);
             }
@@ -147,7 +145,6 @@
             noBtn.style.top = `${randomY}px`;
         }
 
-        // Hide warning on any click anywhere
         document.addEventListener('click', () => {
             if (!angryWarning.classList.contains('hidden')) {
                 hideWarning();
@@ -163,7 +160,7 @@
         });
 
         yesBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
+            e.stopPropagation(); 
             playMusic(); 
             questionContainer.classList.add('hidden');
             successContainer.classList.remove('hidden');
